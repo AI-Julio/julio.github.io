@@ -12,6 +12,429 @@
 <generator>quarto-1.8.25</generator>
 <lastBuildDate>Sat, 06 Dec 2025 06:00:00 GMT</lastBuildDate>
 <item>
+  <title>How to use the library shap properly</title>
+  <link>https://AI-Julio.github.io/julio.github.io/posts/how-to-use-the-library-shap-properly/how-to-use-the-library-shap-properly.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Once you are done with the models and executing any of the model successfully you might need to start analysing the results of the model and what is affecting your model. that is where shap library comes in handly.</p>
+<p>SHAP (SHapley Additive exPlanations) is a data science related library. It’s widely used in machine learning model interpretability. Here’s what it does:</p>
+<p>Purpose: SHAP explains the output of any machine learning model by computing the contribution of each feature to a prediction. Core Idea: It’s based on Shapley values from cooperative game theory, which fairly distribute the “payout” (in this case, the prediction) among features. Why It’s Important: Many models like XGBoost, LightGBM, or neural networks are complex and hard to interpret. SHAP helps you understand:</p>
+<p>Which features are most influential globally (across all predictions). Why a specific prediction was made (local explanation).</p>
+<p>Common Use Cases:</p>
+<p>Feature importance visualization. Debugging models. Building trust in AI by making predictions explainable.</p>
+<ol type="1">
+<li>We are going to install pip install shap. code below.</li>
+</ol>
+<div id="771d04c5" class="cell" data-execution_count="30">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1">pip install shap</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Requirement already satisfied: shap in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (0.50.0)
+Requirement already satisfied: numpy&gt;=2 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from shap) (2.2.6)
+Requirement already satisfied: scipy in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from shap) (1.16.0)
+Requirement already satisfied: scikit-learn in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from shap) (1.7.1)
+Requirement already satisfied: pandas in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from shap) (2.3.1)
+Requirement already satisfied: tqdm&gt;=4.27.0 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from shap) (4.67.1)
+Requirement already satisfied: packaging&gt;20.9 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from shap) (24.2)
+Requirement already satisfied: slicer==0.0.8 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from shap) (0.0.8)
+Requirement already satisfied: numba&gt;=0.54 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from shap) (0.61.2)
+Requirement already satisfied: cloudpickle in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from shap) (3.1.2)
+Requirement already satisfied: typing-extensions in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from shap) (4.12.2)
+Requirement already satisfied: llvmlite&lt;0.45,&gt;=0.44.0dev0 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from numba&gt;=0.54-&gt;shap) (0.44.0)
+Requirement already satisfied: colorama in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from tqdm&gt;=4.27.0-&gt;shap) (0.4.6)
+Requirement already satisfied: python-dateutil&gt;=2.8.2 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from pandas-&gt;shap) (2.9.0.post0)
+Requirement already satisfied: pytz&gt;=2020.1 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from pandas-&gt;shap) (2025.2)
+Requirement already satisfied: tzdata&gt;=2022.7 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from pandas-&gt;shap) (2025.2)
+Requirement already satisfied: six&gt;=1.5 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from python-dateutil&gt;=2.8.2-&gt;pandas-&gt;shap) (1.17.0)
+Requirement already satisfied: joblib&gt;=1.2.0 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from scikit-learn-&gt;shap) (1.5.1)
+Requirement already satisfied: threadpoolctl&gt;=3.1.0 in c:\users\julioa\appdata\local\miniconda3\lib\site-packages (from scikit-learn-&gt;shap) (3.5.0)
+Note: you may need to restart the kernel to use updated packages.</code></pre>
+</div>
+</div>
+<ol start="2" type="1">
+<li>below is a snapshot of a project i worked on for a major transporation company, but it would give you an overall idea of how shap was implemented after the model executed successfully. unfortunately i cannot share all the script because is confidential data.</li>
+</ol>
+<p>Coefficients tell you global importance, but for individual predictions, use:</p>
+<p>SHAP (SHapley Additive exPlanations): Shows how each feature pushes prediction toward TERMINATED or ACTIVE. LIME (Local Interpretable Model-agnostic Explanations): Explains one prediction by approximating locally.</p>
+<div id="70008d69" class="cell" data-execution_count="35">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> shap</span>
+<span id="cb3-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pd</span>
+<span id="cb3-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> plt</span>
+<span id="cb3-4"></span>
+<span id="cb3-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 1. Prepare SHAP values for the pipeline</span></span>
+<span id="cb3-6">X_transformed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> final_pipeline.named_steps[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'preprocessor'</span>].transform(X_test)</span>
+<span id="cb3-7">explainer <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> shap.Explainer(final_pipeline.named_steps[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'model'</span>], X_transformed)</span>
+<span id="cb3-8">shap_values <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> explainer(X_transformed)</span>
+<span id="cb3-9"></span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 2. Get feature names from the preprocessor</span></span>
+<span id="cb3-11">feature_names <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> final_pipeline.named_steps[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'preprocessor'</span>].get_feature_names_out()</span>
+<span id="cb3-12"></span>
+<span id="cb3-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 3. Convert SHAP values to DataFrame</span></span>
+<span id="cb3-14">shap_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.DataFrame(shap_values.values, columns<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>feature_names)</span>
+<span id="cb3-15"></span>
+<span id="cb3-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 4. Extract original feature names (before one-hot encoding)</span></span>
+<span id="cb3-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Example: "categorical__Type_Contract" → "Type"</span></span>
+<span id="cb3-18">original_features <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [name.split(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'__'</span>)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>].split(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'_'</span>)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>] <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> name <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> shap_df.columns]</span>
+<span id="cb3-19">shap_df.columns <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> original_features</span>
+<span id="cb3-20"></span>
+<span id="cb3-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 5. Aggregate SHAP values by original feature (mean absolute value)</span></span>
+<span id="cb3-22">feature_importance <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> shap_df.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">abs</span>().mean().groupby(shap_df.columns).<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sum</span>().sort_values(ascending<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb3-23"></span>
+<span id="cb3-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#"Ops Mgr", "Fleet Mgr"</span></span>
+<span id="cb3-25"></span>
+<span id="cb3-26">exclude_features <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [] </span>
+<span id="cb3-27">filtered_importance <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> feature_importance[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>feature_importance.index.isin(exclude_features)]</span>
+<span id="cb3-28"></span>
+<span id="cb3-29"></span>
+<span id="cb3-30"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot top 50 after filtering</span></span>
+<span id="cb3-31">plt.figure(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>))</span>
+<span id="cb3-32">filtered_importance.head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>).plot(kind<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bar'</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'teal'</span>)</span>
+<span id="cb3-33">plt.title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Top 50 Features by SHAP Importance"</span>)</span>
+<span id="cb3-34">plt.ylabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Mean Absolute SHAP Value"</span>)</span>
+<span id="cb3-35">plt.xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Feature"</span>)</span>
+<span id="cb3-36">plt.xticks(rotation<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">45</span>)</span>
+<span id="cb3-37">plt.tight_layout()</span>
+<span id="cb3-38">plt.show()</span>
+<span id="cb3-39"></span>
+<span id="cb3-40"></span>
+<span id="cb3-41"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Optional: Save to CSV</span></span>
+<span id="cb3-42">feature_importance.to_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"shap_feature_importance.csv"</span>)</span>
+<span id="cb3-43"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"✅ SHAP feature importance saved to shap_feature_importance.csv"</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://AI-Julio.github.io/julio.github.io/posts/how-to-use-the-library-shap-properly/how-to-use-the-library-shap-properly_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✅ SHAP feature importance saved to shap_feature_importance.csv</code></pre>
+</div>
+</div>
+<div id="01c2913e" class="cell" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"></span>
+<span id="cb5-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Exclude features that contain Ops Mgr or Fleet Mgr (case-insensitive)</span></span>
+<span id="cb5-3">exclude_keywords <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Ops Mgr"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Fleet Mgr"</span>]</span>
+<span id="cb5-4">pattern <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'|'</span>.join(exclude_keywords)</span>
+<span id="cb5-5"></span>
+<span id="cb5-6">coef_df_filtered <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> coef_df_sorted[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>coef_df_sorted[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Feature'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.contains(pattern, case<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)]</span></code></pre></div></div>
+</div>
+<div id="b2174a02" class="cell" data-execution_count="33">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pd</span>
+<span id="cb6-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> plt</span>
+<span id="cb6-3"></span>
+<span id="cb6-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract feature names and coefficients from pipeline</span></span>
+<span id="cb6-5">feature_names <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> final_pipeline.named_steps[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'preprocessor'</span>].get_feature_names_out()</span>
+<span id="cb6-6">coefficients <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> final_pipeline.named_steps[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'model'</span>].coef_[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]</span>
+<span id="cb6-7"></span>
+<span id="cb6-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create DataFrame</span></span>
+<span id="cb6-9">coef_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.DataFrame({</span>
+<span id="cb6-10">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Feature'</span>: feature_names,</span>
+<span id="cb6-11">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Coefficient'</span>: coefficients</span>
+<span id="cb6-12">})</span>
+<span id="cb6-13"></span>
+<span id="cb6-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add absolute value for sorting</span></span>
+<span id="cb6-15">coef_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'AbsCoefficient'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> coef_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Coefficient'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">abs</span>()</span>
+<span id="cb6-16"></span>
+<span id="cb6-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Sort by absolute coefficient</span></span>
+<span id="cb6-18">coef_df_sorted <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> coef_df.sort_values(by<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'AbsCoefficient'</span>, ascending<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>).reset_index(drop<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb6-19"></span>
+<span id="cb6-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Exclude features containing Ops Mgr or Fleet Mgr</span></span>
+<span id="cb6-21">exclude_keywords <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Ops Mgr"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Fleet Mgr"</span>]</span>
+<span id="cb6-22">pattern <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'|'</span>.join(exclude_keywords)</span>
+<span id="cb6-23">coef_df_filtered <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> coef_df_sorted[<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span>coef_df_sorted[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Feature'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.contains(pattern, case<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)]</span>
+<span id="cb6-24"></span>
+<span id="cb6-25"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot top 50 features after filtering</span></span>
+<span id="cb6-26">plt.figure(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>))</span>
+<span id="cb6-27">plt.barh(coef_df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Feature'</span>].head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>), coef_df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Coefficient'</span>].head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>), color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'teal'</span>)</span>
+<span id="cb6-28">plt.title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Top 50 Features by Coefficient (Logistic Regression)"</span>)</span>
+<span id="cb6-29">plt.xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Coefficient Value"</span>)</span>
+<span id="cb6-30">plt.ylabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Feature"</span>)</span>
+<span id="cb6-31">plt.gca().invert_yaxis()  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Largest at top</span></span>
+<span id="cb6-32">plt.tight_layout()</span>
+<span id="cb6-33">plt.show()</span>
+<span id="cb6-34"></span>
+<span id="cb6-35"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Optional: Save to CSV</span></span>
+<span id="cb6-36">coef_df_filtered.to_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"logistic_coefficients_filtered.csv"</span>, index<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb6-37"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"✅ Filtered coefficient data saved to logistic_coefficients_filtered.csv"</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://AI-Julio.github.io/julio.github.io/posts/how-to-use-the-library-shap-properly/how-to-use-the-library-shap-properly_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✅ Filtered coefficient data saved to logistic_coefficients_filtered.csv</code></pre>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <category>Python</category>
+  <category>Jupyter</category>
+  <guid>https://AI-Julio.github.io/julio.github.io/posts/how-to-use-the-library-shap-properly/how-to-use-the-library-shap-properly.html</guid>
+  <pubDate>Sat, 06 Dec 2025 06:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Interacting with Google Gemini API</title>
   <link>https://AI-Julio.github.io/julio.github.io/posts/Interacting-with-google-gemini-api/interacting-with-google-gemini-api.html</link>
   <description><![CDATA[ 

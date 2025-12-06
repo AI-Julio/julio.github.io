@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/how-to-use-the-library-shap-properly/how-to-use-the-library-shap-properly.html",
       "/posts/Interacting-with-google-gemini-api/interacting-with-google-gemini-api.html",
       "/posts/welcome/index.html"
     ]
