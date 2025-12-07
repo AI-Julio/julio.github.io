@@ -12,6 +12,1672 @@
 <generator>quarto-1.8.25</generator>
 <lastBuildDate>Sat, 06 Dec 2025 06:00:00 GMT</lastBuildDate>
 <item>
+  <title>Choosing the best Investment Opportunities</title>
+  <link>https://AI-Julio.github.io/julio.github.io/posts/choosing-the-best-investment-opportunities/choosing-the-best-investment-opportunities.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>We are going to try to create a model that will identify the best stocks based on multiple KPIs. specifically we are going to concentrate on growth and stability.</p>
+<ol type="1">
+<li>we need to download the following libraries.</li>
+</ol>
+<div id="51f998e0" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"></span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pd</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> np</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> plotly.express <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> px</span></code></pre></div></div>
+</div>
+<ol start="2" type="1">
+<li>upload your financial dataset</li>
+</ol>
+<div id="c0de08b1" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"></span>
+<span id="cb2-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load dataset</span></span>
+<span id="cb2-3">file_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r'C:</span><span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Users</span><span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">julioa</span><span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">OneDrive - Default Directory</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\D</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">esktop</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\D</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">eskTop</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\D</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">ata Science III</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">yse-stocks</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">.</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">csv'</span></span>
+<span id="cb2-4">stocks_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_csv(file_path)</span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Clean column names</span></span>
+<span id="cb2-7">stocks_df.columns <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> stocks_df.columns.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.strip()</span></code></pre></div></div>
+</div>
+<ol start="3" type="1">
+<li>Identifie the features you want to use for your predictions and clean the data. below is the code.</li>
+</ol>
+<div id="71716212" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"></span>
+<span id="cb3-2">features <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb3-3">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Market Cap'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'PE Ratio'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Div. Yield'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Change YTD'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Return 1Y'</span>,</span>
+<span id="cb3-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rev. Growth (Q)'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'NetInc Growth (Q)'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Gross Margin'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Oper. Margin'</span>,</span>
+<span id="cb3-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'PEG Ratio'</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rev. Growth'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'ROIC'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'EPS Growth'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'PT Upside (%)'</span></span>
+<span id="cb3-6">]</span>
+<span id="cb3-7">rating_column <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Top Rating'</span></span>
+<span id="cb3-8">analyst_column <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Top Analysts'</span></span>
+<span id="cb3-9"></span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 2) Clean 'Total Debt' and 'Total Cash' FIRST (before computing the ratio)</span></span>
+<span id="cb3-11"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> col <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total Debt'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total Cash'</span>]:</span>
+<span id="cb3-12">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> col <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">not</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> stocks_df.columns:</span>
+<span id="cb3-13">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">raise</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">KeyError</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"Column '</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>col<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">' not found in DataFrame."</span>)</span>
+<span id="cb3-14">    s <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> stocks_df[col]</span>
+<span id="cb3-15">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># If it's object/string, strip $, % and commas, then convert to numeric</span></span>
+<span id="cb3-16">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> s.dtype <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'object'</span>:</span>
+<span id="cb3-17">        s <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.replace(<span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r'</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">[</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\$</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">,%,]</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">''</span>, regex<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb3-18">    stocks_df[col] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.to_numeric(s, errors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'coerce'</span>)</span>
+<span id="cb3-19"></span>
+<span id="cb3-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 3) Compute Debt-to-Cash safely (avoid divide-by-zero -&gt; NaN)</span></span>
+<span id="cb3-21">stocks_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Debt-to-Cash'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> stocks_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total Debt'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> stocks_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total Cash'</span>].replace({<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>: np.nan})</span>
+<span id="cb3-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Replace infinite values (if any) with NaN</span></span>
+<span id="cb3-23">stocks_df.replace([np.inf, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>np.inf], np.nan, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb3-24"></span>
+<span id="cb3-25"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 4) Add 'Debt-to-Cash' to features after it exists</span></span>
+<span id="cb3-26">features.append(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Debt-to-Cash'</span>)</span>
+<span id="cb3-27"></span>
+<span id="cb3-28"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 5) Select relevant columns</span></span>
+<span id="cb3-29">selected_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> stocks_df[[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Symbol'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> features <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> [rating_column, analyst_column]].copy()</span>
+<span id="cb3-30"></span>
+<span id="cb3-31"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 6) Robust cleaning &amp; conversion for all feature columns (only use .str on object dtypes)</span></span>
+<span id="cb3-32">symbols_to_strip <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r'</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">[</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\$</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">,%,]</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb3-33"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> col <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> features:</span>
+<span id="cb3-34">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> col <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">not</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> selected_df.columns:</span>
+<span id="cb3-35">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">raise</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">KeyError</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"Column '</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>col<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">' not found after selection."</span>)</span>
+<span id="cb3-36">    series <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> selected_df[col]</span>
+<span id="cb3-37">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> series.dtype <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'object'</span>:</span>
+<span id="cb3-38">        series <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> series.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.replace(symbols_to_strip, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">''</span>, regex<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb3-39">    selected_df[col] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.to_numeric(series, errors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'coerce'</span>)</span>
+<span id="cb3-40"></span>
+<span id="cb3-41"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 7) Convert Top Analysts to numeric</span></span>
+<span id="cb3-42">selected_df[analyst_column] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.to_numeric(selected_df[analyst_column], errors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'coerce'</span>)</span>
+<span id="cb3-43"></span>
+<span id="cb3-44"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 8) Impute missing numeric values with median</span></span>
+<span id="cb3-45">numeric_cols <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> selected_df[features <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> [analyst_column]]</span>
+<span id="cb3-46">selected_df[numeric_cols.columns] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> numeric_cols.fillna(numeric_cols.median())</span></code></pre></div></div>
+</div>
+<div id="8404b27d" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"></span>
+<span id="cb4-2">symbols_to_strip <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">r'</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">[</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\$</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">,%,]</span><span class="vs" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span></span>
+<span id="cb4-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> col <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> features:</span>
+<span id="cb4-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> col <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">not</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> selected_df.columns:</span>
+<span id="cb4-5">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">raise</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">KeyError</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"Column '</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>col<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">' not found in DataFrame."</span>)</span>
+<span id="cb4-6">    s <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> selected_df[col]</span>
+<span id="cb4-7">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> s.dtype <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'object'</span>:</span>
+<span id="cb4-8">        s <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>.replace(symbols_to_strip, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">''</span>, regex<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb4-9">    selected_df[col] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.to_numeric(s, errors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'coerce'</span>)</span>
+<span id="cb4-10"></span>
+<span id="cb4-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Convert Top Analysts to numeric</span></span>
+<span id="cb4-12">selected_df[analyst_column] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.to_numeric(selected_df[analyst_column], errors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'coerce'</span>)</span>
+<span id="cb4-13"></span>
+<span id="cb4-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Replace infinities and handle missing values</span></span>
+<span id="cb4-15">selected_df.replace([np.inf, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>np.inf], np.nan, inplace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb4-16">numeric_cols <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> selected_df[features <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> [analyst_column]]</span>
+<span id="cb4-17">selected_df[numeric_cols.columns] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> numeric_cols.fillna(numeric_cols.median())</span></code></pre></div></div>
+</div>
+<ol start="4" type="1">
+<li>if you have any categories that needs rating this is the time to do that.</li>
+</ol>
+<div id="abd9c33d" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"></span>
+<span id="cb5-2">rating_map <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {</span>
+<span id="cb5-3">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Strong Buy'</span>: <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,</span>
+<span id="cb5-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Buy'</span>: <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>,</span>
+<span id="cb5-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Hold'</span>: <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>,</span>
+<span id="cb5-6">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Sell'</span>: <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>,</span>
+<span id="cb5-7">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Strong Sell'</span>: <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb5-8">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'(blank)'</span>: <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb5-9">}</span>
+<span id="cb5-10">selected_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Top Rating Score'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> selected_df[rating_column].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">map</span>(rating_map).fillna(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span></code></pre></div></div>
+</div>
+<div id="a554885a" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"></span>
+<span id="cb6-2">all_features <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> features <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Top Rating Score'</span>, analyst_column]</span>
+<span id="cb6-3">normalized_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> selected_df.copy()</span>
+<span id="cb6-4"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> feature <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> all_features:</span>
+<span id="cb6-5">    normalized_df[feature] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (</span>
+<span id="cb6-6">        selected_df[feature] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> selected_df[feature].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">min</span>()</span>
+<span id="cb6-7">    ) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> (selected_df[feature].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>() <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> selected_df[feature].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">min</span>())</span></code></pre></div></div>
+</div>
+<ol start="5" type="1">
+<li>this is where we are going add some weights to each of the features. it will all depend where you want your prediction to lean. growth or stability.</li>
+</ol>
+<div id="9f408d3d" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"></span>
+<span id="cb7-2">weights <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {</span>
+<span id="cb7-3">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Market Cap'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.07</span>,</span>
+<span id="cb7-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'PE Ratio'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.07</span>,</span>
+<span id="cb7-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Div. Yield'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>,</span>
+<span id="cb7-6">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Change YTD'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.07</span>,</span>
+<span id="cb7-7">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Return 1Y'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.12</span>,</span>
+<span id="cb7-8">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rev. Growth'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.07</span>,</span>
+<span id="cb7-9">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rev. Growth (Q)'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.07</span>,</span>
+<span id="cb7-10">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'NetInc Growth (Q)'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.07</span>,</span>
+<span id="cb7-11">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Gross Margin'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.07</span>,</span>
+<span id="cb7-12">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Oper. Margin'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.07</span>,</span>
+<span id="cb7-13">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Top Rating Score'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span>,</span>
+<span id="cb7-14">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Top Analysts'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.09</span>,</span>
+<span id="cb7-15">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'PEG Ratio'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.08</span>,</span>
+<span id="cb7-16">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rev. Growth 3Y'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,</span>
+<span id="cb7-17">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'ROIC'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.08</span>,</span>
+<span id="cb7-18">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Debt-to-Cash'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>,</span>
+<span id="cb7-19">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'EPS Growth'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.07</span>,</span>
+<span id="cb7-20">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'PT Upside (%)'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.08</span></span>
+<span id="cb7-21">}</span></code></pre></div></div>
+</div>
+<ol start="6" type="1">
+<li>If you would like to add some bonuses to some of the features, this is the code that will help you do that.</li>
+</ol>
+<div id="90227bf9" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"></span>
+<span id="cb8-2">normalized_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Score'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sum</span>(normalized_df[f] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> w <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> f, w <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> weights.items() <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> f <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> normalized_df.columns)</span>
+<span id="cb8-3"></span>
+<span id="cb8-4">normalized_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb8-5">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'PEG Ratio'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span></span>
+<span id="cb8-6">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rev. Growth'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span></span>
+<span id="cb8-7">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Gross Margin'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span></span>
+<span id="cb8-8">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'ROIC'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span></span>
+<span id="cb8-9">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Debt-to-Cash'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span></span>
+<span id="cb8-10">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'EPS Growth'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span></span>
+<span id="cb8-11">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'PT Upside (%)'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.02</span></span>
+<span id="cb8-12"></span>
+<span id="cb8-13">normalized_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Score'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> normalized_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Bonus'</span>]</span></code></pre></div></div>
+</div>
+<ol start="7" type="1">
+<li>we are going to split the dataset into two columns, stability and growth.</li>
+</ol>
+<div id="aa666ce5" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"></span>
+<span id="cb9-2">stability_weights <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {</span>
+<span id="cb9-3">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Market Cap'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span>,</span>
+<span id="cb9-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Gross Margin'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,</span>
+<span id="cb9-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Oper. Margin'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,</span>
+<span id="cb9-6">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'ROIC'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,</span>
+<span id="cb9-7">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'EPS Growth'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,</span>
+<span id="cb9-8">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Return 1Y'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,</span>
+<span id="cb9-9">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Top Rating Score'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span>,</span>
+<span id="cb9-10">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Top Analysts'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,</span>
+<span id="cb9-11">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Debt-to-Cash'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span></span>
+<span id="cb9-12">}</span>
+<span id="cb9-13"></span>
+<span id="cb9-14">growth_weights <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {</span>
+<span id="cb9-15">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rev. Growth'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span>,</span>
+<span id="cb9-16">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rev. Growth (Q)'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span>,</span>
+<span id="cb9-17">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rev. Growth 3Y'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,</span>
+<span id="cb9-18">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'NetInc Growth (Q)'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,</span>
+<span id="cb9-19">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'PEG Ratio'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,</span>
+<span id="cb9-20">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'PT Upside (%)'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span>,</span>
+<span id="cb9-21">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'EPS Growth'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.10</span>,</span>
+<span id="cb9-22">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Forward PE'</span>: <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Forward PE'</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> normalized_df.columns <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb9-23">}</span>
+<span id="cb9-24"></span>
+<span id="cb9-25">normalized_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Stability Score'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sum</span>(normalized_df[f] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> w <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> f, w <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> stability_weights.items() <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> f <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> normalized_df.columns)</span>
+<span id="cb9-26">normalized_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Growth Score'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sum</span>(normalized_df[f] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> w <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> f, w <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> growth_weights.items() <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> f <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> normalized_df.columns)</span></code></pre></div></div>
+</div>
+<ol start="8" type="1">
+<li>Now we will display top 50 list by rank from 1st to the 50th. Code is below.</li>
+</ol>
+<div id="82d2a7d6" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"></span>
+<span id="cb10-2">normalized_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rank'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> normalized_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Score'</span>].rank(ascending<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb10-3">ranked_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> normalized_df.sort_values(by<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Score'</span>, ascending<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb10-4">ranked_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ranked_df.merge(stocks_df[[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Symbol'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Stock Price'</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Company Name'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Industry'</span>]], on<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Symbol'</span>, how<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'left'</span>)</span>
+<span id="cb10-5"></span>
+<span id="cb10-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Display top 50 with features and scores</span></span>
+<span id="cb10-7">display_cols <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Symbol'</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Company Name'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Industry'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Stock Price'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Score'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Stability Score'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Growth Score'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Rank'</span>]</span>
+<span id="cb10-8">ranked_df[display_cols].head(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Symbol</th>
+<th data-quarto-table-cell-role="th">Company Name</th>
+<th data-quarto-table-cell-role="th">Industry</th>
+<th data-quarto-table-cell-role="th">Stock Price</th>
+<th data-quarto-table-cell-role="th">Score</th>
+<th data-quarto-table-cell-role="th">Stability Score</th>
+<th data-quarto-table-cell-role="th">Growth Score</th>
+<th data-quarto-table-cell-role="th">Rank</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>QBTS</td>
+<td>D-Wave Quantum Inc.</td>
+<td>Computer Hardware</td>
+<td>20.41</td>
+<td>0.563291</td>
+<td>0.426603</td>
+<td>0.057357</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>TSM</td>
+<td>Taiwan Semiconductor Manufacturing Company Lim...</td>
+<td>Semiconductors</td>
+<td>275.06</td>
+<td>0.540367</td>
+<td>0.418919</td>
+<td>0.055446</td>
+<td>2.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>PINS</td>
+<td>Pinterest, Inc.</td>
+<td>Internet Content &amp; Information</td>
+<td>24.96</td>
+<td>0.529136</td>
+<td>0.389112</td>
+<td>0.062554</td>
+<td>3.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>NOW</td>
+<td>ServiceNow, Inc.</td>
+<td>Software - Application</td>
+<td>813.43</td>
+<td>0.524479</td>
+<td>0.386467</td>
+<td>0.055416</td>
+<td>4.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>SNOW</td>
+<td>Snowflake Inc.</td>
+<td>Software - Application</td>
+<td>234.03</td>
+<td>0.504314</td>
+<td>0.422867</td>
+<td>0.052452</td>
+<td>5.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>KGC</td>
+<td>Kinross Gold Corporation</td>
+<td>Gold</td>
+<td>24.39</td>
+<td>0.492657</td>
+<td>0.333585</td>
+<td>0.053590</td>
+<td>6.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>ORCL</td>
+<td>Oracle Corporation</td>
+<td>Software - Infrastructure</td>
+<td>198.76</td>
+<td>0.492528</td>
+<td>0.419359</td>
+<td>0.058335</td>
+<td>7.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>UBER</td>
+<td>Uber Technologies, Inc.</td>
+<td>Software - Application</td>
+<td>83.87</td>
+<td>0.490672</td>
+<td>0.411099</td>
+<td>0.056383</td>
+<td>8.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>QXO</td>
+<td>QXO, Inc.</td>
+<td>Industrial Distribution</td>
+<td>16.98</td>
+<td>0.489589</td>
+<td>0.331291</td>
+<td>0.248021</td>
+<td>9.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>LLY</td>
+<td>Eli Lilly and Company</td>
+<td>Drug Manufacturers - General</td>
+<td>1059.70</td>
+<td>0.485529</td>
+<td>0.397347</td>
+<td>0.052562</td>
+<td>10.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>RDDT</td>
+<td>Reddit, Inc.</td>
+<td>Internet Content &amp; Information</td>
+<td>183.48</td>
+<td>0.482277</td>
+<td>0.359201</td>
+<td>0.054614</td>
+<td>11.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>SCHW</td>
+<td>The Charles Schwab Corporation</td>
+<td>Capital Markets</td>
+<td>90.51</td>
+<td>0.481128</td>
+<td>0.340040</td>
+<td>0.053637</td>
+<td>12.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>TME</td>
+<td>Tencent Music Entertainment Group</td>
+<td>Internet Content &amp; Information</td>
+<td>18.15</td>
+<td>0.473795</td>
+<td>0.322155</td>
+<td>0.053970</td>
+<td>13.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>CWAN</td>
+<td>Clearwater Analytics Holdings, Inc.</td>
+<td>Software - Application</td>
+<td>21.58</td>
+<td>0.473430</td>
+<td>0.415741</td>
+<td>0.156249</td>
+<td>14.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>HUBS</td>
+<td>HubSpot, Inc.</td>
+<td>Software - Application</td>
+<td>355.35</td>
+<td>0.473005</td>
+<td>0.350331</td>
+<td>0.059245</td>
+<td>15.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>RBRK</td>
+<td>Rubrik, Inc.</td>
+<td>Software - Infrastructure</td>
+<td>66.59</td>
+<td>0.471959</td>
+<td>0.365266</td>
+<td>0.058117</td>
+<td>16.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>NUVB</td>
+<td>Nuvation Bio Inc.</td>
+<td>Biotechnology</td>
+<td>6.99</td>
+<td>0.469808</td>
+<td>0.335900</td>
+<td>0.078476</td>
+<td>17.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>SE</td>
+<td>Sea Limited</td>
+<td>Internet Retail</td>
+<td>131.34</td>
+<td>0.468028</td>
+<td>0.341930</td>
+<td>0.064931</td>
+<td>18.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>DELL</td>
+<td>Dell Technologies Inc.</td>
+<td>Computer Hardware</td>
+<td>122.51</td>
+<td>0.467992</td>
+<td>0.366043</td>
+<td>0.054506</td>
+<td>19.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>CIEN</td>
+<td>Ciena Corporation</td>
+<td>Communication Equipment</td>
+<td>178.26</td>
+<td>0.465502</td>
+<td>0.372520</td>
+<td>0.048943</td>
+<td>20.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>ATEN</td>
+<td>A10 Networks, Inc.</td>
+<td>Software - Infrastructure</td>
+<td>16.84</td>
+<td>0.464813</td>
+<td>0.318837</td>
+<td>0.052967</td>
+<td>21.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>AMPX</td>
+<td>Amprius Technologies, Inc.</td>
+<td>Electrical Equipment &amp; Parts</td>
+<td>10.11</td>
+<td>0.462594</td>
+<td>0.345888</td>
+<td>0.058682</td>
+<td>22.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>NET</td>
+<td>Cloudflare, Inc.</td>
+<td>Software - Infrastructure</td>
+<td>186.38</td>
+<td>0.462266</td>
+<td>0.354587</td>
+<td>0.053466</td>
+<td>23.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">23</th>
+<td>TWLO</td>
+<td>Twilio Inc.</td>
+<td>Software - Infrastructure</td>
+<td>120.57</td>
+<td>0.462013</td>
+<td>0.352295</td>
+<td>0.055505</td>
+<td>24.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>SGHC</td>
+<td>Super Group (SGHC) Limited</td>
+<td>Gambling</td>
+<td>11.96</td>
+<td>0.461723</td>
+<td>0.350204</td>
+<td>0.070380</td>
+<td>25.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>DT</td>
+<td>Dynatrace, Inc.</td>
+<td>Software - Application</td>
+<td>43.57</td>
+<td>0.461132</td>
+<td>0.339494</td>
+<td>0.056752</td>
+<td>26.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>VRT</td>
+<td>Vertiv Holdings Co</td>
+<td>Electrical Equipment &amp; Parts</td>
+<td>159.83</td>
+<td>0.460335</td>
+<td>0.355322</td>
+<td>0.053475</td>
+<td>27.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>TGLS</td>
+<td>Tecnoglass Inc.</td>
+<td>Building Materials</td>
+<td>47.29</td>
+<td>0.454735</td>
+<td>0.308096</td>
+<td>0.058358</td>
+<td>28.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">28</th>
+<td>CRM</td>
+<td>Salesforce, Inc.</td>
+<td>Software - Application</td>
+<td>227.11</td>
+<td>0.453689</td>
+<td>0.358946</td>
+<td>0.055730</td>
+<td>29.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">29</th>
+<td>VEEV</td>
+<td>Veeva Systems Inc.</td>
+<td>Health Information Services</td>
+<td>244.06</td>
+<td>0.452335</td>
+<td>0.327336</td>
+<td>0.053515</td>
+<td>30.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">30</th>
+<td>NEM</td>
+<td>Newmont Corporation</td>
+<td>Gold</td>
+<td>83.49</td>
+<td>0.451476</td>
+<td>0.336770</td>
+<td>0.053068</td>
+<td>31.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">31</th>
+<td>RBLX</td>
+<td>Roblox Corporation</td>
+<td>Electronic Gaming &amp; Multimedia</td>
+<td>89.25</td>
+<td>0.450960</td>
+<td>0.340796</td>
+<td>0.058606</td>
+<td>32.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">32</th>
+<td>BABA</td>
+<td>Alibaba Group Holding Limited</td>
+<td>Internet Retail</td>
+<td>152.93</td>
+<td>0.450284</td>
+<td>0.365982</td>
+<td>0.054042</td>
+<td>33.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">33</th>
+<td>MTZ</td>
+<td>MasTec, Inc.</td>
+<td>Engineering &amp; Construction</td>
+<td>193.08</td>
+<td>0.445921</td>
+<td>0.358975</td>
+<td>0.054652</td>
+<td>34.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">34</th>
+<td>EME</td>
+<td>EMCOR Group, Inc.</td>
+<td>Engineering &amp; Construction</td>
+<td>581.58</td>
+<td>0.445691</td>
+<td>0.317662</td>
+<td>0.053127</td>
+<td>35.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">35</th>
+<td>APH</td>
+<td>Amphenol Corporation</td>
+<td>Electronic Components</td>
+<td>131.60</td>
+<td>0.445317</td>
+<td>0.356652</td>
+<td>0.053038</td>
+<td>36.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">36</th>
+<td>KVYO</td>
+<td>Klaviyo, Inc.</td>
+<td>Software - Application</td>
+<td>27.64</td>
+<td>0.444881</td>
+<td>0.340292</td>
+<td>0.057284</td>
+<td>37.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">37</th>
+<td>IONQ</td>
+<td>IonQ, Inc.</td>
+<td>Computer Hardware</td>
+<td>41.71</td>
+<td>0.443998</td>
+<td>0.333902</td>
+<td>0.059121</td>
+<td>38.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">38</th>
+<td>CLS</td>
+<td>Celestica Inc.</td>
+<td>Electronic Components</td>
+<td>280.06</td>
+<td>0.443129</td>
+<td>0.359190</td>
+<td>0.054216</td>
+<td>39.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">39</th>
+<td>RJF</td>
+<td>Raymond James Financial, Inc.</td>
+<td>Asset Management</td>
+<td>152.99</td>
+<td>0.442795</td>
+<td>0.297958</td>
+<td>0.052849</td>
+<td>40.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">40</th>
+<td>AGI</td>
+<td>Alamos Gold Inc.</td>
+<td>Gold</td>
+<td>32.63</td>
+<td>0.442277</td>
+<td>0.288674</td>
+<td>0.054680</td>
+<td>41.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">41</th>
+<td>JOBY</td>
+<td>Joby Aviation, Inc.</td>
+<td>Airports &amp; Air Services</td>
+<td>13.07</td>
+<td>0.442076</td>
+<td>0.261952</td>
+<td>0.236621</td>
+<td>42.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">42</th>
+<td>CVNA</td>
+<td>Carvana Co.</td>
+<td>Auto &amp; Truck Dealerships</td>
+<td>309.88</td>
+<td>0.441803</td>
+<td>0.333980</td>
+<td>0.055038</td>
+<td>43.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">43</th>
+<td>CDE</td>
+<td>Coeur Mining, Inc.</td>
+<td>Gold</td>
+<td>13.99</td>
+<td>0.441636</td>
+<td>0.320864</td>
+<td>0.054142</td>
+<td>44.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">44</th>
+<td>NOTE</td>
+<td>FiscalNote Holdings, Inc.</td>
+<td>Information Technology Services</td>
+<td>2.00</td>
+<td>0.441328</td>
+<td>0.304244</td>
+<td>0.195760</td>
+<td>45.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">45</th>
+<td>ANRO</td>
+<td>Alto Neuroscience, Inc.</td>
+<td>Biotechnology</td>
+<td>13.25</td>
+<td>0.441072</td>
+<td>0.332000</td>
+<td>0.057324</td>
+<td>46.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">46</th>
+<td>WMT</td>
+<td>Walmart Inc.</td>
+<td>Discount Stores</td>
+<td>105.32</td>
+<td>0.440720</td>
+<td>0.414153</td>
+<td>0.052469</td>
+<td>47.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">47</th>
+<td>TPC</td>
+<td>Tutor Perini Corporation</td>
+<td>Engineering &amp; Construction</td>
+<td>60.94</td>
+<td>0.440397</td>
+<td>0.320158</td>
+<td>0.054751</td>
+<td>48.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">48</th>
+<td>NRG</td>
+<td>NRG Energy, Inc.</td>
+<td>Utilities - Independent Power Producers</td>
+<td>159.20</td>
+<td>0.440022</td>
+<td>0.350080</td>
+<td>0.053054</td>
+<td>49.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">49</th>
+<td>APO</td>
+<td>Apollo Global Management, Inc.</td>
+<td>Asset Management</td>
+<td>130.02</td>
+<td>0.439456</td>
+<td>0.337258</td>
+<td>0.053199</td>
+<td>50.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<ol start="9" type="1">
+<li>last but not least, we will display them on a graph so that you can see which stocks are on the growth and stability side.</li>
+</ol>
+<div id="e26d02de" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"></span>
+<span id="cb11-2">fig <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> px.scatter(ranked_df, x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Stability Score'</span>, y<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Growth Score'</span>, text<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Symbol'</span>,</span>
+<span id="cb11-3">                 color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Score'</span>, size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Market Cap'</span>,</span>
+<span id="cb11-4">                 title<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Stability vs Growth Potential'</span>)</span>
+<span id="cb11-5">fig.show()</span></code></pre></div></div>
+<div class="cell-output cell-output-display">
+<pre><code>Unable to display output for mime type(s): application/vnd.plotly.v1+json</code></pre>
+</div>
+</div>
+<ol start="10" type="1">
+<li>This will save your results to a CSV file.</li>
+</ol>
+<div id="b12256d8" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"></span>
+<span id="cb13-2">ranked_df.to_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'ranked_stocks_with_scores.csv'</span>, index<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb13-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Exported ranked results to ranked_stocks_with_scores.csv"</span>)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Exported ranked results to ranked_stocks_with_scores.csv</code></pre>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <category>Python</category>
+  <category>Jupyter</category>
+  <guid>https://AI-Julio.github.io/julio.github.io/posts/choosing-the-best-investment-opportunities/choosing-the-best-investment-opportunities.html</guid>
+  <pubDate>Sat, 06 Dec 2025 06:00:00 GMT</pubDate>
+</item>
+<item>
   <title>How to use the library shap properly</title>
   <link>https://AI-Julio.github.io/julio.github.io/posts/how-to-use-the-library-shap-properly/how-to-use-the-library-shap-properly.html</link>
   <description><![CDATA[ 
@@ -20,12 +1686,13 @@
 
 
 
-<p>Once you are done with the models and executing any of the model successfully you might need to start analysing the results of the model and what is affecting your model. that is where shap library comes in handly.</p>
-<p>SHAP (SHapley Additive exPlanations) is a data science related library. It’s widely used in machine learning model interpretability. Here’s what it does:</p>
-<p>Purpose: SHAP explains the output of any machine learning model by computing the contribution of each feature to a prediction. Core Idea: It’s based on Shapley values from cooperative game theory, which fairly distribute the “payout” (in this case, the prediction) among features. Why It’s Important: Many models like XGBoost, LightGBM, or neural networks are complex and hard to interpret. SHAP helps you understand:</p>
-<p>Which features are most influential globally (across all predictions). Why a specific prediction was made (local explanation).</p>
-<p>Common Use Cases:</p>
-<p>Feature importance visualization. Debugging models. Building trust in AI by making predictions explainable.</p>
+<p>Once you’ve built and successfully executed your models, the next step is to analyze their results and understand what influences their predictions. This is where the SHAP library becomes extremely useful. SHAP (SHapley Additive exPlanations) is a powerful tool for model interpretability in data science. It helps you explain the output of machine learning models by quantifying the contribution of each feature to a prediction.</p>
+<p>Why SHAP Matters</p>
+<p>Purpose: SHAP explains individual predictions by assigning each feature a contribution value. Core Concept: It’s based on Shapley values from cooperative game theory, which fairly distribute the “payout” (in this case, the prediction) among all features. Importance: Many models—such as XGBoost, LightGBM, and neural networks—are complex and often considered “black boxes.” SHAP makes them transparent by answering:</p>
+<p>Which features are most influential globally (across all predictions)? Why was a specific prediction made (local explanation)?</p>
+<p>Common Use Cases</p>
+<p>Visualizing feature importance. Debugging and improving models. Building trust in AI by making predictions explainable.</p>
+<p>In short, SHAP bridges the gap between accuracy and interpretability, enabling you to not only build strong models but also understand and communicate their behavior effectively.</p>
 <ol type="1">
 <li>We are going to install pip install shap. code below.</li>
 </ol>
@@ -55,7 +1722,7 @@ Note: you may need to restart the kernel to use updated packages.</code></pre>
 </div>
 </div>
 <ol start="2" type="1">
-<li>below is a snapshot of a project i worked on for a major transporation company, but it would give you an overall idea of how shap was implemented after the model executed successfully. unfortunately i cannot share all the script because is confidential data.</li>
+<li>Below is a snapshot from a project I worked on for a major transportation company. While I can’t share the full script due to confidentiality, this example provides an overview of how SHAP was implemented after the model was successfully executed.</li>
 </ol>
 <p>Coefficients tell you global importance, but for individual predictions, use:</p>
 <p>SHAP (SHapley Additive exPlanations): Shows how each feature pushes prediction toward TERMINATED or ACTIVE. LIME (Local Interpretable Model-agnostic Explanations): Explains one prediction by approximating locally.</p>
@@ -1054,1671 +2721,8 @@ Name: _________________________________________ Date: ___________________
   <pubDate>Sat, 06 Dec 2025 06:00:00 GMT</pubDate>
 </item>
 <item>
-  <title>Picking the best Stocks</title>
-  <link>https://AI-Julio.github.io/julio.github.io/posts/picking-the-best-stocks/picking-the-best-stocks.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>We are going to try to create a model that will identify the best stocks based on multiple KPIs. specifically we are going to concentrate on growth and stability.</p>
-<ol type="1">
-<li>we need to download the following libraries.</li>
-</ol>
-<div id="51f998e0" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"></span>
-<span id="cb1-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> pd</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb1-4"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> plotly.express <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> px</span></code></pre></div></div>
-</div>
-<ol start="2" type="1">
-<li>upload your financial dataset</li>
-</ol>
-<div id="c0de08b1" class="cell" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"></span>
-<span id="cb2-2"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load dataset</span></span>
-<span id="cb2-3">file_path <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">r'C:</span><span class="er" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Users</span><span class="er" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">julioa</span><span class="er" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">OneDrive - Default Directory</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\D</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">esktop</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\D</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">eskTop</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\D</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">ata Science III</span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">\n</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">yse-stocks</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">.</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">csv'</span></span>
-<span id="cb2-4">stocks_df <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pd.read_csv(file_path)</span>
-<span id="cb2-5"></span>
-<span id="cb2-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Clean column names</span></span>
-<span id="cb2-7">stocks_df.columns <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> stocks_df.columns.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">str</span>.strip()</span></code></pre></div></div>
-</div>
-<ol start="3" type="1">
-<li>Identifie the features you want to use for your predictions and clean the data. below is the code.</li>
-</ol>
-<div id="71716212" class="cell" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"></span>
-<span id="cb3-2">features <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> [</span>
-<span id="cb3-3">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Market Cap'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'PE Ratio'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Div. Yield'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Change YTD'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Return 1Y'</span>,</span>
-<span id="cb3-4">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Rev. Growth (Q)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'NetInc Growth (Q)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Gross Margin'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Oper. Margin'</span>,</span>
-<span id="cb3-5">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'PEG Ratio'</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Rev. Growth'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ROIC'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'EPS Growth'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'PT Upside (%)'</span></span>
-<span id="cb3-6">]</span>
-<span id="cb3-7">rating_column <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Top Rating'</span></span>
-<span id="cb3-8">analyst_column <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Top Analysts'</span></span>
-<span id="cb3-9"></span>
-<span id="cb3-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 2) Clean 'Total Debt' and 'Total Cash' FIRST (before computing the ratio)</span></span>
-<span id="cb3-11"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> col <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> [<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Total Debt'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Total Cash'</span>]:</span>
-<span id="cb3-12">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> col <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">not</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> stocks_df.columns:</span>
-<span id="cb3-13">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">raise</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">KeyError</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Column '</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>col<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">' not found in DataFrame."</span>)</span>
-<span id="cb3-14">    s <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> stocks_df[col]</span>
-<span id="cb3-15">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># If it's object/string, strip $, % and commas, then convert to numeric</span></span>
-<span id="cb3-16">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> s.dtype <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'object'</span>:</span>
-<span id="cb3-17">        s <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> s.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">str</span>.replace(<span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">r'</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">[</span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">\$</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">,%,]</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">''</span>, regex<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>)</span>
-<span id="cb3-18">    stocks_df[col] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pd.to_numeric(s, errors<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'coerce'</span>)</span>
-<span id="cb3-19"></span>
-<span id="cb3-20"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 3) Compute Debt-to-Cash safely (avoid divide-by-zero -&gt; NaN)</span></span>
-<span id="cb3-21">stocks_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Debt-to-Cash'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> stocks_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Total Debt'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> stocks_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Total Cash'</span>].replace({<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>: np.nan})</span>
-<span id="cb3-22"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Replace infinite values (if any) with NaN</span></span>
-<span id="cb3-23">stocks_df.replace([np.inf, <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>np.inf], np.nan, inplace<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>)</span>
-<span id="cb3-24"></span>
-<span id="cb3-25"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 4) Add 'Debt-to-Cash' to features after it exists</span></span>
-<span id="cb3-26">features.append(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Debt-to-Cash'</span>)</span>
-<span id="cb3-27"></span>
-<span id="cb3-28"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 5) Select relevant columns</span></span>
-<span id="cb3-29">selected_df <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> stocks_df[[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Symbol'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> features <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> [rating_column, analyst_column]].copy()</span>
-<span id="cb3-30"></span>
-<span id="cb3-31"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 6) Robust cleaning &amp; conversion for all feature columns (only use .str on object dtypes)</span></span>
-<span id="cb3-32">symbols_to_strip <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">r'</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">[</span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">\$</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">,%,]</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'</span></span>
-<span id="cb3-33"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> col <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> features:</span>
-<span id="cb3-34">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> col <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">not</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> selected_df.columns:</span>
-<span id="cb3-35">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">raise</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">KeyError</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Column '</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>col<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">' not found after selection."</span>)</span>
-<span id="cb3-36">    series <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> selected_df[col]</span>
-<span id="cb3-37">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> series.dtype <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'object'</span>:</span>
-<span id="cb3-38">        series <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> series.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">str</span>.replace(symbols_to_strip, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">''</span>, regex<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>)</span>
-<span id="cb3-39">    selected_df[col] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pd.to_numeric(series, errors<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'coerce'</span>)</span>
-<span id="cb3-40"></span>
-<span id="cb3-41"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 7) Convert Top Analysts to numeric</span></span>
-<span id="cb3-42">selected_df[analyst_column] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pd.to_numeric(selected_df[analyst_column], errors<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'coerce'</span>)</span>
-<span id="cb3-43"></span>
-<span id="cb3-44"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 8) Impute missing numeric values with median</span></span>
-<span id="cb3-45">numeric_cols <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> selected_df[features <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> [analyst_column]]</span>
-<span id="cb3-46">selected_df[numeric_cols.columns] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> numeric_cols.fillna(numeric_cols.median())</span></code></pre></div></div>
-</div>
-<div id="8404b27d" class="cell" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"></span>
-<span id="cb4-2">symbols_to_strip <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">r'</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">[</span><span class="ch" style="color: #20794D;
-background-color: null;
-font-style: inherit;">\$</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">,%,]</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'</span></span>
-<span id="cb4-3"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> col <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> features:</span>
-<span id="cb4-4">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> col <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">not</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> selected_df.columns:</span>
-<span id="cb4-5">        <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">raise</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">KeyError</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Column '</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>col<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">' not found in DataFrame."</span>)</span>
-<span id="cb4-6">    s <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> selected_df[col]</span>
-<span id="cb4-7">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> s.dtype <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'object'</span>:</span>
-<span id="cb4-8">        s <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> s.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">str</span>.replace(symbols_to_strip, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">''</span>, regex<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>)</span>
-<span id="cb4-9">    selected_df[col] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pd.to_numeric(s, errors<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'coerce'</span>)</span>
-<span id="cb4-10"></span>
-<span id="cb4-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Convert Top Analysts to numeric</span></span>
-<span id="cb4-12">selected_df[analyst_column] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pd.to_numeric(selected_df[analyst_column], errors<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'coerce'</span>)</span>
-<span id="cb4-13"></span>
-<span id="cb4-14"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Replace infinities and handle missing values</span></span>
-<span id="cb4-15">selected_df.replace([np.inf, <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>np.inf], np.nan, inplace<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>)</span>
-<span id="cb4-16">numeric_cols <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> selected_df[features <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> [analyst_column]]</span>
-<span id="cb4-17">selected_df[numeric_cols.columns] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> numeric_cols.fillna(numeric_cols.median())</span></code></pre></div></div>
-</div>
-<ol start="4" type="1">
-<li>if you have any categories that needs rating this is the time to do that.</li>
-</ol>
-<div id="abd9c33d" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"></span>
-<span id="cb5-2">rating_map <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> {</span>
-<span id="cb5-3">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Strong Buy'</span>: <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>,</span>
-<span id="cb5-4">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Buy'</span>: <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>,</span>
-<span id="cb5-5">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Hold'</span>: <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>,</span>
-<span id="cb5-6">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Sell'</span>: <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>,</span>
-<span id="cb5-7">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Strong Sell'</span>: <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,</span>
-<span id="cb5-8">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'(blank)'</span>: <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span></span>
-<span id="cb5-9">}</span>
-<span id="cb5-10">selected_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Top Rating Score'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> selected_df[rating_column].<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">map</span>(rating_map).fillna(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)</span></code></pre></div></div>
-</div>
-<div id="a554885a" class="cell" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"></span>
-<span id="cb6-2">all_features <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> features <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> [<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Top Rating Score'</span>, analyst_column]</span>
-<span id="cb6-3">normalized_df <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> selected_df.copy()</span>
-<span id="cb6-4"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> feature <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> all_features:</span>
-<span id="cb6-5">    normalized_df[feature] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> (</span>
-<span id="cb6-6">        selected_df[feature] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> selected_df[feature].<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">min</span>()</span>
-<span id="cb6-7">    ) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (selected_df[feature].<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">max</span>() <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> selected_df[feature].<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">min</span>())</span></code></pre></div></div>
-</div>
-<ol start="5" type="1">
-<li>this is where we are going add some weights to each of the features. it will all depend where you want your prediction to lean. growth or stability.</li>
-</ol>
-<div id="9f408d3d" class="cell" data-execution_count="20">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"></span>
-<span id="cb7-2">weights <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> {</span>
-<span id="cb7-3">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Market Cap'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.07</span>,</span>
-<span id="cb7-4">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'PE Ratio'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.07</span>,</span>
-<span id="cb7-5">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Div. Yield'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>,</span>
-<span id="cb7-6">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Change YTD'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.07</span>,</span>
-<span id="cb7-7">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Return 1Y'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.12</span>,</span>
-<span id="cb7-8">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Rev. Growth'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.07</span>,</span>
-<span id="cb7-9">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Rev. Growth (Q)'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.07</span>,</span>
-<span id="cb7-10">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'NetInc Growth (Q)'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.07</span>,</span>
-<span id="cb7-11">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Gross Margin'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.07</span>,</span>
-<span id="cb7-12">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Oper. Margin'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.07</span>,</span>
-<span id="cb7-13">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Top Rating Score'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.15</span>,</span>
-<span id="cb7-14">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Top Analysts'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.09</span>,</span>
-<span id="cb7-15">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'PEG Ratio'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.08</span>,</span>
-<span id="cb7-16">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Rev. Growth 3Y'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span id="cb7-17">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ROIC'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.08</span>,</span>
-<span id="cb7-18">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Debt-to-Cash'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>,</span>
-<span id="cb7-19">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'EPS Growth'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.07</span>,</span>
-<span id="cb7-20">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'PT Upside (%)'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.08</span></span>
-<span id="cb7-21">}</span></code></pre></div></div>
-</div>
-<ol start="6" type="1">
-<li>if you would like to add some bonuse, this is the code that will help you do that.</li>
-</ol>
-<div id="90227bf9" class="cell" data-execution_count="8">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"></span>
-<span id="cb8-2">normalized_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Score'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">sum</span>(normalized_df[f] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> w <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> f, w <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> weights.items() <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> f <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> normalized_df.columns)</span>
-<span id="cb8-3"></span>
-<span id="cb8-4">normalized_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span></span>
-<span id="cb8-5">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'PEG Ratio'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.5</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span></span>
-<span id="cb8-6">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Rev. Growth'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span></span>
-<span id="cb8-7">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Gross Margin'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">40</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span></span>
-<span id="cb8-8">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ROIC'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span></span>
-<span id="cb8-9">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Debt-to-Cash'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span></span>
-<span id="cb8-10">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'EPS Growth'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span></span>
-<span id="cb8-11">normalized_df.loc[selected_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'PT Upside (%)'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">15</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Bonus'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.02</span></span>
-<span id="cb8-12"></span>
-<span id="cb8-13">normalized_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Score'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span> normalized_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Bonus'</span>]</span></code></pre></div></div>
-</div>
-<ol start="7" type="1">
-<li>we are going to split the dataset into two columns stability and growth.</li>
-</ol>
-<div id="aa666ce5" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"></span>
-<span id="cb9-2">stability_weights <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> {</span>
-<span id="cb9-3">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Market Cap'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.15</span>,</span>
-<span id="cb9-4">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Gross Margin'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span id="cb9-5">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Oper. Margin'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span id="cb9-6">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ROIC'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span id="cb9-7">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'EPS Growth'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span id="cb9-8">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Return 1Y'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span id="cb9-9">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Top Rating Score'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.15</span>,</span>
-<span id="cb9-10">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Top Analysts'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span id="cb9-11">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Debt-to-Cash'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span></span>
-<span id="cb9-12">}</span>
-<span id="cb9-13"></span>
-<span id="cb9-14">growth_weights <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> {</span>
-<span id="cb9-15">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Rev. Growth'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.15</span>,</span>
-<span id="cb9-16">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Rev. Growth (Q)'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.15</span>,</span>
-<span id="cb9-17">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Rev. Growth 3Y'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span id="cb9-18">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'NetInc Growth (Q)'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span id="cb9-19">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'PEG Ratio'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span id="cb9-20">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'PT Upside (%)'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.15</span>,</span>
-<span id="cb9-21">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'EPS Growth'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span id="cb9-22">    <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Forward PE'</span>: <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Forward PE'</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> normalized_df.columns <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span></span>
-<span id="cb9-23">}</span>
-<span id="cb9-24"></span>
-<span id="cb9-25">normalized_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Stability Score'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">sum</span>(normalized_df[f] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> w <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> f, w <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> stability_weights.items() <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> f <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> normalized_df.columns)</span>
-<span id="cb9-26">normalized_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Growth Score'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">sum</span>(normalized_df[f] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> w <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> f, w <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> growth_weights.items() <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> f <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> normalized_df.columns)</span></code></pre></div></div>
-</div>
-<ol start="8" type="1">
-<li>display top 50 list</li>
-</ol>
-<div id="82d2a7d6" class="cell" data-execution_count="16">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"></span>
-<span id="cb10-2">normalized_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Rank'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> normalized_df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Score'</span>].rank(ascending<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">False</span>)</span>
-<span id="cb10-3">ranked_df <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> normalized_df.sort_values(by<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Score'</span>, ascending<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">False</span>)</span>
-<span id="cb10-4">ranked_df <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> ranked_df.merge(stocks_df[[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Symbol'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Stock Price'</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Company Name'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Industry'</span>]], on<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Symbol'</span>, how<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'left'</span>)</span>
-<span id="cb10-5"></span>
-<span id="cb10-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Display top 50 with features and scores</span></span>
-<span id="cb10-7">display_cols <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Symbol'</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Company Name'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Industry'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Stock Price'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Score'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Stability Score'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Growth Score'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Rank'</span>]</span>
-<span id="cb10-8">ranked_df[display_cols].head(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Symbol</th>
-<th data-quarto-table-cell-role="th">Company Name</th>
-<th data-quarto-table-cell-role="th">Industry</th>
-<th data-quarto-table-cell-role="th">Stock Price</th>
-<th data-quarto-table-cell-role="th">Score</th>
-<th data-quarto-table-cell-role="th">Stability Score</th>
-<th data-quarto-table-cell-role="th">Growth Score</th>
-<th data-quarto-table-cell-role="th">Rank</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">0</th>
-<td>QBTS</td>
-<td>D-Wave Quantum Inc.</td>
-<td>Computer Hardware</td>
-<td>20.41</td>
-<td>0.563291</td>
-<td>0.426603</td>
-<td>0.057357</td>
-<td>1.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1</th>
-<td>TSM</td>
-<td>Taiwan Semiconductor Manufacturing Company Lim...</td>
-<td>Semiconductors</td>
-<td>275.06</td>
-<td>0.540367</td>
-<td>0.418919</td>
-<td>0.055446</td>
-<td>2.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">2</th>
-<td>PINS</td>
-<td>Pinterest, Inc.</td>
-<td>Internet Content &amp; Information</td>
-<td>24.96</td>
-<td>0.529136</td>
-<td>0.389112</td>
-<td>0.062554</td>
-<td>3.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">3</th>
-<td>NOW</td>
-<td>ServiceNow, Inc.</td>
-<td>Software - Application</td>
-<td>813.43</td>
-<td>0.524479</td>
-<td>0.386467</td>
-<td>0.055416</td>
-<td>4.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">4</th>
-<td>SNOW</td>
-<td>Snowflake Inc.</td>
-<td>Software - Application</td>
-<td>234.03</td>
-<td>0.504314</td>
-<td>0.422867</td>
-<td>0.052452</td>
-<td>5.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">5</th>
-<td>KGC</td>
-<td>Kinross Gold Corporation</td>
-<td>Gold</td>
-<td>24.39</td>
-<td>0.492657</td>
-<td>0.333585</td>
-<td>0.053590</td>
-<td>6.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">6</th>
-<td>ORCL</td>
-<td>Oracle Corporation</td>
-<td>Software - Infrastructure</td>
-<td>198.76</td>
-<td>0.492528</td>
-<td>0.419359</td>
-<td>0.058335</td>
-<td>7.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">7</th>
-<td>UBER</td>
-<td>Uber Technologies, Inc.</td>
-<td>Software - Application</td>
-<td>83.87</td>
-<td>0.490672</td>
-<td>0.411099</td>
-<td>0.056383</td>
-<td>8.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">8</th>
-<td>QXO</td>
-<td>QXO, Inc.</td>
-<td>Industrial Distribution</td>
-<td>16.98</td>
-<td>0.489589</td>
-<td>0.331291</td>
-<td>0.248021</td>
-<td>9.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">9</th>
-<td>LLY</td>
-<td>Eli Lilly and Company</td>
-<td>Drug Manufacturers - General</td>
-<td>1059.70</td>
-<td>0.485529</td>
-<td>0.397347</td>
-<td>0.052562</td>
-<td>10.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">10</th>
-<td>RDDT</td>
-<td>Reddit, Inc.</td>
-<td>Internet Content &amp; Information</td>
-<td>183.48</td>
-<td>0.482277</td>
-<td>0.359201</td>
-<td>0.054614</td>
-<td>11.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">11</th>
-<td>SCHW</td>
-<td>The Charles Schwab Corporation</td>
-<td>Capital Markets</td>
-<td>90.51</td>
-<td>0.481128</td>
-<td>0.340040</td>
-<td>0.053637</td>
-<td>12.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">12</th>
-<td>TME</td>
-<td>Tencent Music Entertainment Group</td>
-<td>Internet Content &amp; Information</td>
-<td>18.15</td>
-<td>0.473795</td>
-<td>0.322155</td>
-<td>0.053970</td>
-<td>13.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">13</th>
-<td>CWAN</td>
-<td>Clearwater Analytics Holdings, Inc.</td>
-<td>Software - Application</td>
-<td>21.58</td>
-<td>0.473430</td>
-<td>0.415741</td>
-<td>0.156249</td>
-<td>14.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">14</th>
-<td>HUBS</td>
-<td>HubSpot, Inc.</td>
-<td>Software - Application</td>
-<td>355.35</td>
-<td>0.473005</td>
-<td>0.350331</td>
-<td>0.059245</td>
-<td>15.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">15</th>
-<td>RBRK</td>
-<td>Rubrik, Inc.</td>
-<td>Software - Infrastructure</td>
-<td>66.59</td>
-<td>0.471959</td>
-<td>0.365266</td>
-<td>0.058117</td>
-<td>16.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">16</th>
-<td>NUVB</td>
-<td>Nuvation Bio Inc.</td>
-<td>Biotechnology</td>
-<td>6.99</td>
-<td>0.469808</td>
-<td>0.335900</td>
-<td>0.078476</td>
-<td>17.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">17</th>
-<td>SE</td>
-<td>Sea Limited</td>
-<td>Internet Retail</td>
-<td>131.34</td>
-<td>0.468028</td>
-<td>0.341930</td>
-<td>0.064931</td>
-<td>18.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">18</th>
-<td>DELL</td>
-<td>Dell Technologies Inc.</td>
-<td>Computer Hardware</td>
-<td>122.51</td>
-<td>0.467992</td>
-<td>0.366043</td>
-<td>0.054506</td>
-<td>19.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">19</th>
-<td>CIEN</td>
-<td>Ciena Corporation</td>
-<td>Communication Equipment</td>
-<td>178.26</td>
-<td>0.465502</td>
-<td>0.372520</td>
-<td>0.048943</td>
-<td>20.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">20</th>
-<td>ATEN</td>
-<td>A10 Networks, Inc.</td>
-<td>Software - Infrastructure</td>
-<td>16.84</td>
-<td>0.464813</td>
-<td>0.318837</td>
-<td>0.052967</td>
-<td>21.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">21</th>
-<td>AMPX</td>
-<td>Amprius Technologies, Inc.</td>
-<td>Electrical Equipment &amp; Parts</td>
-<td>10.11</td>
-<td>0.462594</td>
-<td>0.345888</td>
-<td>0.058682</td>
-<td>22.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">22</th>
-<td>NET</td>
-<td>Cloudflare, Inc.</td>
-<td>Software - Infrastructure</td>
-<td>186.38</td>
-<td>0.462266</td>
-<td>0.354587</td>
-<td>0.053466</td>
-<td>23.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">23</th>
-<td>TWLO</td>
-<td>Twilio Inc.</td>
-<td>Software - Infrastructure</td>
-<td>120.57</td>
-<td>0.462013</td>
-<td>0.352295</td>
-<td>0.055505</td>
-<td>24.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">24</th>
-<td>SGHC</td>
-<td>Super Group (SGHC) Limited</td>
-<td>Gambling</td>
-<td>11.96</td>
-<td>0.461723</td>
-<td>0.350204</td>
-<td>0.070380</td>
-<td>25.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">25</th>
-<td>DT</td>
-<td>Dynatrace, Inc.</td>
-<td>Software - Application</td>
-<td>43.57</td>
-<td>0.461132</td>
-<td>0.339494</td>
-<td>0.056752</td>
-<td>26.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">26</th>
-<td>VRT</td>
-<td>Vertiv Holdings Co</td>
-<td>Electrical Equipment &amp; Parts</td>
-<td>159.83</td>
-<td>0.460335</td>
-<td>0.355322</td>
-<td>0.053475</td>
-<td>27.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">27</th>
-<td>TGLS</td>
-<td>Tecnoglass Inc.</td>
-<td>Building Materials</td>
-<td>47.29</td>
-<td>0.454735</td>
-<td>0.308096</td>
-<td>0.058358</td>
-<td>28.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">28</th>
-<td>CRM</td>
-<td>Salesforce, Inc.</td>
-<td>Software - Application</td>
-<td>227.11</td>
-<td>0.453689</td>
-<td>0.358946</td>
-<td>0.055730</td>
-<td>29.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">29</th>
-<td>VEEV</td>
-<td>Veeva Systems Inc.</td>
-<td>Health Information Services</td>
-<td>244.06</td>
-<td>0.452335</td>
-<td>0.327336</td>
-<td>0.053515</td>
-<td>30.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">30</th>
-<td>NEM</td>
-<td>Newmont Corporation</td>
-<td>Gold</td>
-<td>83.49</td>
-<td>0.451476</td>
-<td>0.336770</td>
-<td>0.053068</td>
-<td>31.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">31</th>
-<td>RBLX</td>
-<td>Roblox Corporation</td>
-<td>Electronic Gaming &amp; Multimedia</td>
-<td>89.25</td>
-<td>0.450960</td>
-<td>0.340796</td>
-<td>0.058606</td>
-<td>32.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">32</th>
-<td>BABA</td>
-<td>Alibaba Group Holding Limited</td>
-<td>Internet Retail</td>
-<td>152.93</td>
-<td>0.450284</td>
-<td>0.365982</td>
-<td>0.054042</td>
-<td>33.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">33</th>
-<td>MTZ</td>
-<td>MasTec, Inc.</td>
-<td>Engineering &amp; Construction</td>
-<td>193.08</td>
-<td>0.445921</td>
-<td>0.358975</td>
-<td>0.054652</td>
-<td>34.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">34</th>
-<td>EME</td>
-<td>EMCOR Group, Inc.</td>
-<td>Engineering &amp; Construction</td>
-<td>581.58</td>
-<td>0.445691</td>
-<td>0.317662</td>
-<td>0.053127</td>
-<td>35.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">35</th>
-<td>APH</td>
-<td>Amphenol Corporation</td>
-<td>Electronic Components</td>
-<td>131.60</td>
-<td>0.445317</td>
-<td>0.356652</td>
-<td>0.053038</td>
-<td>36.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">36</th>
-<td>KVYO</td>
-<td>Klaviyo, Inc.</td>
-<td>Software - Application</td>
-<td>27.64</td>
-<td>0.444881</td>
-<td>0.340292</td>
-<td>0.057284</td>
-<td>37.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">37</th>
-<td>IONQ</td>
-<td>IonQ, Inc.</td>
-<td>Computer Hardware</td>
-<td>41.71</td>
-<td>0.443998</td>
-<td>0.333902</td>
-<td>0.059121</td>
-<td>38.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">38</th>
-<td>CLS</td>
-<td>Celestica Inc.</td>
-<td>Electronic Components</td>
-<td>280.06</td>
-<td>0.443129</td>
-<td>0.359190</td>
-<td>0.054216</td>
-<td>39.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">39</th>
-<td>RJF</td>
-<td>Raymond James Financial, Inc.</td>
-<td>Asset Management</td>
-<td>152.99</td>
-<td>0.442795</td>
-<td>0.297958</td>
-<td>0.052849</td>
-<td>40.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">40</th>
-<td>AGI</td>
-<td>Alamos Gold Inc.</td>
-<td>Gold</td>
-<td>32.63</td>
-<td>0.442277</td>
-<td>0.288674</td>
-<td>0.054680</td>
-<td>41.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">41</th>
-<td>JOBY</td>
-<td>Joby Aviation, Inc.</td>
-<td>Airports &amp; Air Services</td>
-<td>13.07</td>
-<td>0.442076</td>
-<td>0.261952</td>
-<td>0.236621</td>
-<td>42.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">42</th>
-<td>CVNA</td>
-<td>Carvana Co.</td>
-<td>Auto &amp; Truck Dealerships</td>
-<td>309.88</td>
-<td>0.441803</td>
-<td>0.333980</td>
-<td>0.055038</td>
-<td>43.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">43</th>
-<td>CDE</td>
-<td>Coeur Mining, Inc.</td>
-<td>Gold</td>
-<td>13.99</td>
-<td>0.441636</td>
-<td>0.320864</td>
-<td>0.054142</td>
-<td>44.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">44</th>
-<td>NOTE</td>
-<td>FiscalNote Holdings, Inc.</td>
-<td>Information Technology Services</td>
-<td>2.00</td>
-<td>0.441328</td>
-<td>0.304244</td>
-<td>0.195760</td>
-<td>45.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">45</th>
-<td>ANRO</td>
-<td>Alto Neuroscience, Inc.</td>
-<td>Biotechnology</td>
-<td>13.25</td>
-<td>0.441072</td>
-<td>0.332000</td>
-<td>0.057324</td>
-<td>46.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">46</th>
-<td>WMT</td>
-<td>Walmart Inc.</td>
-<td>Discount Stores</td>
-<td>105.32</td>
-<td>0.440720</td>
-<td>0.414153</td>
-<td>0.052469</td>
-<td>47.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">47</th>
-<td>TPC</td>
-<td>Tutor Perini Corporation</td>
-<td>Engineering &amp; Construction</td>
-<td>60.94</td>
-<td>0.440397</td>
-<td>0.320158</td>
-<td>0.054751</td>
-<td>48.0</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">48</th>
-<td>NRG</td>
-<td>NRG Energy, Inc.</td>
-<td>Utilities - Independent Power Producers</td>
-<td>159.20</td>
-<td>0.440022</td>
-<td>0.350080</td>
-<td>0.053054</td>
-<td>49.0</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">49</th>
-<td>APO</td>
-<td>Apollo Global Management, Inc.</td>
-<td>Asset Management</td>
-<td>130.02</td>
-<td>0.439456</td>
-<td>0.337258</td>
-<td>0.053199</td>
-<td>50.0</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<ol start="9" type="1">
-<li>Display them on a graph</li>
-</ol>
-<div id="e26d02de" class="cell" data-execution_count="17">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"></span>
-<span id="cb11-2">fig <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> px.scatter(ranked_df, x<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Stability Score'</span>, y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Growth Score'</span>, text<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Symbol'</span>,</span>
-<span id="cb11-3">                 color<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Score'</span>, size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Market Cap'</span>,</span>
-<span id="cb11-4">                 title<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Stability vs Growth Potential'</span>)</span>
-<span id="cb11-5">fig.show()</span></code></pre></div></div>
-<div class="cell-output cell-output-display">
-<pre><code>Unable to display output for mime type(s): application/vnd.plotly.v1+json</code></pre>
-</div>
-</div>
-<div id="b12256d8" class="cell" data-execution_count="18">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"></span>
-<span id="cb13-2">ranked_df.to_csv(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ranked_stocks_with_scores.csv'</span>, index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">False</span>)</span>
-<span id="cb13-3"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Exported ranked results to ranked_stocks_with_scores.csv"</span>)</span></code></pre></div></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Exported ranked results to ranked_stocks_with_scores.csv</code></pre>
-</div>
-</div>
-
-
-
- ]]></description>
-  <category>Python</category>
-  <category>Jupyter</category>
-  <guid>https://AI-Julio.github.io/julio.github.io/posts/picking-the-best-stocks/picking-the-best-stocks.html</guid>
-  <pubDate>Sat, 06 Dec 2025 06:00:00 GMT</pubDate>
-</item>
-<item>
   <title>Welcome To My Blog</title>
-  <dc:creator>Tristan O&#39;Malley</dc:creator>
+  <dc:creator>Julio Avila</dc:creator>
   <link>https://AI-Julio.github.io/julio.github.io/posts/welcome/</link>
   <description><![CDATA[ 
 
@@ -2735,7 +2739,7 @@ font-style: inherit;">"Exported ranked results to ranked_stocks_with_scores.csv"
  ]]></description>
   <category>news</category>
   <guid>https://AI-Julio.github.io/julio.github.io/posts/welcome/</guid>
-  <pubDate>Wed, 03 Dec 2025 06:00:00 GMT</pubDate>
+  <pubDate>Sat, 06 Dec 2025 06:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

@@ -9,7 +9,7 @@
 <meta name="dcterms.date" content="2025-12-06">
 <meta name="description" content="How to create a model that will predict the best stocks">
 
-<title>Picking the best Stocks – A-Data-Science-Blog: by Julio Avila</title>
+<title>Choosing the best Investment Opportunities – A-Data-Science-Blog: by Julio Avila</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -157,7 +157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Picking the best Stocks</h1>
+      <h1 class="title">Choosing the best Investment Opportunities</h1>
                   <div>
         <div class="description">
           How to create a model that will predict the best stocks
@@ -339,7 +339,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ol start="6" type="1">
-<li>if you would like to add some bonuse, this is the code that will help you do that.</li>
+<li>If you would like to add some bonuses to some of the features, this is the code that will help you do that.</li>
 </ol>
 <div id="90227bf9" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
@@ -357,7 +357,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>normalized_df[<span class="st">'Score'</span>] <span class="op">+=</span> normalized_df[<span class="st">'Bonus'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ol start="7" type="1">
-<li>we are going to split the dataset into two columns stability and growth.</li>
+<li>we are going to split the dataset into two columns, stability and growth.</li>
 </ol>
 <div id="aa666ce5" class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
@@ -388,7 +388,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>normalized_df[<span class="st">'Growth Score'</span>] <span class="op">=</span> <span class="bu">sum</span>(normalized_df[f] <span class="op">*</span> w <span class="cf">for</span> f, w <span class="kw">in</span> growth_weights.items() <span class="cf">if</span> f <span class="kw">in</span> normalized_df.columns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ol start="8" type="1">
-<li>display top 50 list</li>
+<li>Now we will display top 50 list by rank from 1st to the 50th. Code is below.</li>
 </ol>
 <div id="82d2a7d6" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a></span>
@@ -975,7 +975,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <ol start="9" type="1">
-<li>Display them on a graph</li>
+<li>last but not least, we will display them on a graph so that you can see which stocks are on the growth and stability side.</li>
 </ol>
 <div id="e26d02de" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a></span>
@@ -987,6 +987,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>Unable to display output for mime type(s): application/vnd.plotly.v1+json</code></pre>
 </div>
 </div>
+<ol start="10" type="1">
+<li>This will save your results to a CSV file.</li>
+</ol>
 <div id="b12256d8" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ranked_df.to_csv(<span class="st">'ranked_stocks_with_scores.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span>

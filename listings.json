@@ -2,9 +2,9 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/choosing-the-best-investment-opportunities/choosing-the-best-investment-opportunities.html",
       "/posts/how-to-use-the-library-shap-properly/how-to-use-the-library-shap-properly.html",
       "/posts/Interacting-with-google-gemini-api/interacting-with-google-gemini-api.html",
-      "/posts/picking-the-best-stocks/picking-the-best-stocks.html",
       "/posts/welcome/index.html"
     ]
   }

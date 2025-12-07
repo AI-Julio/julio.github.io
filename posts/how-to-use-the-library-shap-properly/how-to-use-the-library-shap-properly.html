@@ -193,12 +193,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p>Once you are done with the models and executing any of the model successfully you might need to start analysing the results of the model and what is affecting your model. that is where shap library comes in handly.</p>
-<p>SHAP (SHapley Additive exPlanations) is a data science related library. It’s widely used in machine learning model interpretability. Here’s what it does:</p>
-<p>Purpose: SHAP explains the output of any machine learning model by computing the contribution of each feature to a prediction. Core Idea: It’s based on Shapley values from cooperative game theory, which fairly distribute the “payout” (in this case, the prediction) among features. Why It’s Important: Many models like XGBoost, LightGBM, or neural networks are complex and hard to interpret. SHAP helps you understand:</p>
-<p>Which features are most influential globally (across all predictions). Why a specific prediction was made (local explanation).</p>
-<p>Common Use Cases:</p>
-<p>Feature importance visualization. Debugging models. Building trust in AI by making predictions explainable.</p>
+<p>Once you’ve built and successfully executed your models, the next step is to analyze their results and understand what influences their predictions. This is where the SHAP library becomes extremely useful. SHAP (SHapley Additive exPlanations) is a powerful tool for model interpretability in data science. It helps you explain the output of machine learning models by quantifying the contribution of each feature to a prediction.</p>
+<p>Why SHAP Matters</p>
+<p>Purpose: SHAP explains individual predictions by assigning each feature a contribution value. Core Concept: It’s based on Shapley values from cooperative game theory, which fairly distribute the “payout” (in this case, the prediction) among all features. Importance: Many models—such as XGBoost, LightGBM, and neural networks—are complex and often considered “black boxes.” SHAP makes them transparent by answering:</p>
+<p>Which features are most influential globally (across all predictions)? Why was a specific prediction made (local explanation)?</p>
+<p>Common Use Cases</p>
+<p>Visualizing feature importance. Debugging and improving models. Building trust in AI by making predictions explainable.</p>
+<p>In short, SHAP bridges the gap between accuracy and interpretability, enabling you to not only build strong models but also understand and communicate their behavior effectively.</p>
 <ol type="1">
 <li>We are going to install pip install shap. code below.</li>
 </ol>
@@ -228,7 +229,7 @@ Note: you may need to restart the kernel to use updated packages.</code></pre>
 </div>
 </div>
 <ol start="2" type="1">
-<li>below is a snapshot of a project i worked on for a major transporation company, but it would give you an overall idea of how shap was implemented after the model executed successfully. unfortunately i cannot share all the script because is confidential data.</li>
+<li>Below is a snapshot from a project I worked on for a major transportation company. While I can’t share the full script due to confidentiality, this example provides an overview of how SHAP was implemented after the model was successfully executed.</li>
 </ol>
 <p>Coefficients tell you global importance, but for individual predictions, use:</p>
 <p>SHAP (SHapley Additive exPlanations): Shows how each feature pushes prediction toward TERMINATED or ACTIVE. LIME (Local Interpretable Model-agnostic Explanations): Explains one prediction by approximating locally.</p>
